@@ -13,54 +13,14 @@
 	<script type="text/javascript" src="../../lib/js/materialize.js"></script>
 	<script type="text/javascript" src="../../js/adapter-settings.js"></script>
 
+	<!--Import Google Icon Font-->
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+	<!--Import materialize.css-->
+	<link type="text/css" rel="stylesheet" href="css/materialize.min.css"  media="screen,projection"/>
 	<!-- Load our own files -->
-	<link rel="stylesheet" type="text/css" href="../../iobroker.dali4net/admin/style.css" />
-	<script type="text/javascript" src="../../iobroker.dali4net/admin/words.js"></script>
-
-	<script type="text/javascript">
-		// This will be called by the admin adapter when the settings page loads
-		function load(settings, onChange) {
-			// example: select elements with id=key and class=value and insert value
-			if (!settings) return;
-			$('.value').each(function () {
-				var $key = $(this);
-				var id = $key.attr('id');
-				if ($key.attr('type') === 'checkbox') {
-					// do not call onChange direct, because onChange could expect some arguments
-					$key.prop('checked', settings[id])
-						.on('change', () => onChange())
-						;
-				} else {
-					// do not call onChange direct, because onChange could expect some arguments
-					$key.val(settings[id])
-						.on('change', () => onChange())
-						.on('keyup', () => onChange())
-						;
-				}
-			});
-
-
-			onChange(false);
-			// reinitialize all the Materialize labels on the page if you are dynamically adding inputs:
-			if (M) M.updateTextFields();
-
-		}
-
-		// This will be called by the admin adapter when the user presses the save button
-		function save(callback) {
-			// example: select elements with class=value and build settings object
-			var obj = {};
-			$('.value').each(function () {
-				var $this = $(this);
-				if ($this.attr('type') === 'checkbox') {
-					obj[$this.attr('id')] = $this.prop('checked');
-				} else {
-					obj[$this.attr('id')] = $this.val();
-				}
-			});
-			callback(obj);
-		}
-	</script>
+	<link rel="stylesheet" type="text/css" href="style.css"/>
+	<script type="text/javascript" src="words.js"></script>
+	<script type="text/javascript" src="admin.js"></script>
 
 </head>
 
@@ -68,66 +28,64 @@
 
 	<div class="m adapter-container">
 
-		<div class="toprow">
-			<div class="col s12 m4 l2">
-				<img src="../../iobroker.dali4net/admin/dali4net.png" class="logo">
-			</div>
-		</div>
+		
 
 		<!-- Put your content here -->
-
+		<div class="toprow">
+			<div class="col s12 m4 l2">
+				<img src="dali.png" class="logo">
+			</div>
+		</div>
 		<!-- For example columns with settings: -->
+		
+
+		
 		<div class="row">
-					<div class="col s3 input-field">
-						<input type="text" class="value" id="host" />
-						<label for="host" class="translate">IP Adresse</label>
-					</div>
-
-					<div class="col s3 input-field">
-						<input class="value" type="number" min="1" max="65565" id="port" value="502">
-						<label class="translate" for="port">Port</label>
-					</div>
-
-		</div>
+			<div class='field'>
+				<div class="input-field col s3">
+					<i class="material-icons prefix">public</i>
+					<input id="host" type="text" class="value" class="translate" minlength="7" maxlength="15" size="15" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$">
+					<label for="host">IP Address</label>
+				</div>
+				<div class="input-field col s3">
+					<i class="material-icons prefix">receipt</i>
+					<input id="port" type="number" min="1" max="65565" class="value" value="502">
+					<label for="port">Port</label>
+				</div>  
+			</div>
+		</div> 
 		<div class="row">
-
-					<div class="col s2 input-field">
-						<label>
-							<input type="checkbox" id="Bus0" class="value"  />
-							<span for="Bus0" >Bus 0</span>
-						</label>
-					</div>
-		</div>
-		<div class="row">
-					<div class="col s2 input-field">
-						<label>
-							<input id="Bus1" type="checkbox" class="value"  />
-							<span for="Bus1" >Bus 0</span>
-						</label>
-					</div>
-		</div>
-		<div class="row">
-
-					<div class="col s2 input-field">
-						<label>
-							<input id="Bus2" type="checkbox" class="value"  />
-							<span for="Bus2" >Bus 0</span>
-						</label>
-					</div>
-		</div>
-		<div class="row">
-
-					<div class="col s2 input-field">
-						<label>
-							<input id="Bus3" type="checkbox" class="value"  />
-							<span for="Bus3" >Bus 0</span>
-						</label>
-					</div>
-
-	       </div>
-
-
-
+			<div class="ch">
+				<div class="card-panel blue-grey lighten-3">
+					<span class="white-text translate">
+						Choose which bus network you want to use.
+				    </span>
+					<form action="#">
+						<div class="col s3 input-field">
+							<input id= "bus0" type="checkbox" class='value'/>
+							<span>Bus 0</span>	
+						</div>
+			
+						<div class="col s3 input-field">
+							<input id= "bus1" type="checkbox" class='value'/>
+							<span>Bus 1</span>
+						</div>
+			
+						<div class="col s3 input-field">
+							<input id= "bus2" type="checkbox" class='value'/>
+							<span>Bus 2</span>
+						</div>
+			
+						<div class="col s3 input-field">
+							<input id= "bus3" type="checkbox" class='value'/>
+							<span>Bus 3</span>
+						</div>
+						<br></br>
+					</form>
+				</div>
+			</div>
+		</div>		
+	</div>
 </body>
 
 </html>

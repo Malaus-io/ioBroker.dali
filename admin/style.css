@@ -1,10 +1,29 @@
 /* You can delete those if you want. I just found them very helpful */
-* {
-    box-sizing: border-box
-}
+
 .m {
     /* Don't cut off dropdowns! */
     overflow: initial;
+ 
+   
+    
 }
 
 /* Add your styles here */
+
+.field{
+    margin-left: 1%;
+} 
+ 
+.ch{
+    margin-left: 2%; 
+}
+.card-panel{
+    
+    width: 45vw;
+    margin-left: auto;
+    margin-right: auto;
+    
+    border-color: transparent;
+    box-shadow: 10px 15px 10px black;
+}
+

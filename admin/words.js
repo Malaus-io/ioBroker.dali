@@ -14,9 +14,9 @@ systemDictionary = {
         'pl': 'Ustawienia adaptera dla dali',
         'zh-cn': 'dali的适配器设置'
     },
-    'option1': {
-        'en': 'option1',
-        'de': 'Option 1',
+    'IP Adress': {
+        'en': 'IP Adress',
+        'de': 'IP Adresse',
         'ru': 'Опция 1',
         'pt': 'Opção 1',
         'nl': 'Optie 1',
@@ -26,9 +26,9 @@ systemDictionary = {
         'pl': 'opcja 1',
         'zh-cn': '选项1'
     },
-    'option2': {
-        'en': 'option2',
-        'de': 'Option 2',
+    'Choose which bus network you want to use.': {
+        'en': 'Choose which bus network you want to use.',
+        'de': 'Wähle das Bus Netzwerk aus, das du verwenden möchtest.',
         'ru': 'option2',
         'pt': 'opção 2',
         'nl': 'Optie 2',

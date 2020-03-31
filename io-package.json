@@ -31,21 +31,24 @@
         },
         "desc": {
             "en": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "de": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "ru": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "pt": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "nl": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "fr": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "it": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "es": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "pl": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
-            "zh-cn": "The DALI 4Net can be used for commissioning and control of DALI lighting systems."
+            "de": "Das DALI 4Net kann zur Inbetriebnahme und Steuerung von DALI-Beleuchtungssystemen verwendet werden.",
+            "ru": "DALI 4Net может использоваться для ввода в эксплуатацию и управления системами освещения DALI.",
+            "pt": "O DALI 4Net pode ser usado para comissionamento e controle de sistemas de iluminação DALI.",
+            "nl": "De DALI 4Net kan worden gebruikt voor inbedrijfstelling en besturing van DALI-verlichtingssystemen.",
+            "fr": "Le DALI 4Net peut être utilisé pour la mise en service et le contrôle des systèmes d'éclairage DALI.",
+            "it": "DALI 4Net può essere utilizzato per la messa in servizio e il controllo di sistemi di illuminazione DALI.",
+            "es": "El DALI 4Net se puede utilizar para la puesta en marcha y el control de los sistemas de iluminación DALI.",
+            "pl": "DALI 4Net może być wykorzystywany do uruchamiania i sterowania systemami oświetleniowymi DALI.",
+            "zh-cn": "DALI 4Net可用于DALI照明系统的调试和控制。"
         },
         "authors": [
-            "Malaus <petermuellers300@gmail.com>"
+            "Malaus"
         ],
         "keywords": [
-            "he DALI 4Net can be used for commissioning and control of DALI lighting systems. DALI is a standardized digital protocol for the control of electronic ballasts for lighting systems according to standard IEC62386. Exclusively ballast or control devices with DALI interface may be connected to one of the DALI-lines.The DALI 4Net has connectors for four DALI lines (DALI 0-3). This allows installing up to 256 DALI ballasts and additional control devices."
+            "bus",
+            "light",
+            "ioBroker",
+            "dali"
         ],
         "license": "MIT",
         "platform": "Javascript/Node.js",
@@ -55,11 +58,12 @@
         "extIcon": "https://raw.githubusercontent.com/Malaus-io/ioBroker.dali/master/admin/dali.png",
         "readme": "https://github.com/Malaus-io/ioBroker.dali/blob/master/README.md",
         "loglevel": "info",
-        "mode": "subscribe",
+        "mode": "daemon",
         "type": "lighting",
         "compact": true,
         "materialize": true,
-        "supportCustoms": true,
+        "connectionType": "local",
+        "dataSource": "poll",
         "dependencies": [
             {
                 "js-controller": ">=1.4.2"
@@ -67,31 +71,13 @@
         ]
     },
     "native": {
-        "option1": true,
-        "option2": "42"
+        "host": "",
+        "port": 502,
+        "bus0": false,
+        "bus1": false,
+        "bus2": false,
+        "bus3": false
     },
     "objects": [],
-    "instanceObjects": [
-        {
-            "_id": "info",
-            "type": "channel",
-            "common": {
-                "name": "Information"
-            },
-            "native": {}
-        },
-        {
-            "_id": "info.connection",
-            "type": "state",
-            "common": {
-                "role": "indicator.connected",
-                "name": "Device or service connected",
-                "type": "boolean",
-                "read": true,
-                "write": false,
-                "def": false
-            },
-            "native": {}
-        }
-    ]
+    "instanceObjects": []
 }
