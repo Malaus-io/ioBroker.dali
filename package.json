@@ -4,19 +4,23 @@
   "description": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
   "author": {
     "name": "Malaus",
-    "email": "petermuellers300@gmail.com"
+    "email": "email@mail.com"
   },
   "homepage": "https://github.com/Malaus-io/ioBroker.dali",
   "license": "MIT",
   "keywords": [
-    "he DALI 4Net can be used for commissioning and control of DALI lighting systems. DALI is a standardized digital protocol for the control of electronic ballasts for lighting systems according to standard IEC62386. Exclusively ballast or control devices with DALI interface may be connected to one of the DALI-lines.The DALI 4Net has connectors for four DALI lines (DALI 0-3). This allows installing up to 256 DALI ballasts and additional control devices."
+    "bus",
+    "light",
+    "ioBroker",
+    "dali"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/Malaus-io/ioBroker.dali.git"
   },
   "dependencies": {
-    "@iobroker/adapter-core": "^2.2.1"
+    "@iobroker/adapter-core": "^2.2.1",
+    "tcp-ping": "^0.1.1"
   },
   "devDependencies": {
     "@iobroker/testing": "^2.1.0",

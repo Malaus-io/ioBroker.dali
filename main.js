@@ -1,186 +1,288 @@
 'use strict';
 
-/*
- * Created with @iobroker/create-adapter v1.17.0
- */
-
-// The adapter-core module gives you access to the core ioBroker functions
-// you need to create an adapter
 const utils = require('@iobroker/adapter-core');
+const net = require('net');
+const tcpp = require('tcp-ping');
 
-// Load your modules here, e.g.:
-// const fs = require("fs");
-const test = require('../ioBroker.dali/lib/firstStep');
-
-/**
- * The adapter instance
- * @type {ioBroker.Adapter}
- */
-let adapter;
-
-/**
- * Starts the adapter instance
- * @param {Partial<ioBroker.AdapterOptions>} [options]
- */
-
-init();
-const bla = test;
-
-function startAdapter(options) {
-    // Create the adapter and define its methods
-    return adapter = utils.adapter(Object.assign({}, options, {
-        name: 'dali',
-
-        // The ready callback is called when databases are connected and adapter received configuration.
-        // start here!
-        ready: main, // Main method defined below for readability
-
-        // is called when adapter shuts down - callback has to be called under any circumstances!
-        unload: (callback) => {
-            try {
-                adapter.log.info('cleaned everything up...');
-                callback();
-            } catch (e) {
-                callback();
-            }
-        },
-
-        // is called if a subscribed object changes
-        objectChange: (id, obj) => {
-            if (obj) {
-                // The object was changed
-                adapter.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-            } else {
-                // The object was deleted
-                adapter.log.info(`object ${id} deleted`);
-            }
-        },
-
-        // is called if a subscribed state changes
-        stateChange: (id, state) => {
-            if (state) {
-                // The state was changed
-                adapter.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
-            } else {
-                // The state was deleted
-                adapter.log.info(`state ${id} deleted`);
-            }
-        },
-
-        // Some message was sent to adapter instance over message box. Used by email, pushover, text2speech, ...
-        // requires "common.message" property to be set to true in io-package.json
-        // message: (obj) => {
-        // 	if (typeof obj === 'object' && obj.message) {
-        // 		if (obj.command === 'send') {
-        // 			// e.g. send email or pushover or whatever
-        // 			adapter.log.info('send command');
-
-        // 			// Send response in callback if required
-        // 			if (obj.callback) adapter.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-        // 		}
-        // 	}
-        // },
-    }));
-}
-
-function main() {
-
-    // Reset the connection indicator during startup
-    //this.setState('info.connection', false, true);
-    adapter.setState('info.connection', false, true);
-
-    // The adapters config (in the instance object everything under the attribute "native") is accessible via
-    // adapter.config:
-    //this.log.info('config');
-    //this.log.info('config option1: ' + this.config.host);
-    adapter.log.info('config option2: ' + adapter.config.port);
-
-    /*
-        For every state in the system there has to be also an object of type state
-        Here a simple template for a boolean variable named "testVariable"
-        Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
-    */
-    adapter.setObject('testVariable', {
-        type: 'state',
-        common: {
-            name: 'testVariable',
-            type: 'boolean',
-            role: 'indicator',
-            read: true,
-            write: true,
-        },
-        native: {},
-    });
-
-    // in this template all states changes inside the adapters namespace are subscribed
-    adapter.subscribeStates('*');
-
-    /*
-        setState examples
-        you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-    */
-    // the variable testVariable is set to true as command (ack=false)
-    adapter.setState('testVariable', true);
-
-    // same thing, but the value is flagged "ack"
-    // ack should be always set to true if the value is received from or acknowledged from the target system
-    adapter.setState('testVariable', { val: true, ack: true });
-
-    // same thing, but the state is deleted after 30s (getState will return null afterwards)
-    adapter.setState('testVariable', { val: true, ack: true, expire: 30 });
-
-    // examples for the checkPassword/checkGroup functions
-    adapter.checkPassword('admin', 'iobroker', (res) => {
-        adapter.log.info('check user admin pw ioboker: ' + res);
-    });
-
-    adapter.checkGroup('admin', 'admin', (res) => {
-        adapter.log.info('check group user admin group admin: ' + res);
-    });
-
-//sendMessage(adapter.config.host, adapter.config.port)
-
-
-/*
-        function sendMessage(host, port) {
-            var hex_data = ["0x00", "0x00", "0x00", "0x00", "0x00", "0x17", "0x01", "0x17", "0x00", "0x65", "0x00", "0x05", "0x00", "0x64", "0x00", "0x06", "0x0c", "0x12", "0x00", "0x00", "0x03", "0x00", "0x00", "0x01", "0xa0", "0x00", "0x00", "0x00", "0x00"]
-            var data = Buffer.from(hex_data);
-
-            var client = net.connect({host: host, port: port}, function () {
-                log('connected to server!');
-                client.write(data);
-            });
-            client.on('data', function (data) {
-                log("Response ")
-                client.end();
-                this.setState('info.connection', {val: true, ack: true});
-                //return callback(true);
-            });
-            client.on('end', function () {
-                log('disconnected from server');
-            });
-            client.on('error', function (error) {
-                console.error('error: ' + error);
-                client.end();
-                this.setState('info.connection', {val: false, ack: true});
-                //return callback(true);
-            });
-        }
-*/
+const first = require('./lib/dali');
 
 
 
+class Dali extends utils.Adapter {
 
-}
-function init() {
-
-
-// @ts-ignore parent is a valid property on module
-    if (module.parent) {
-        // Export startAdapter in compact mode
-        module.exports = startAdapter;
-    } else {
-        // otherwise start the instance directly
-        startAdapter();
+    /**
+     * @param {Partial<ioBroker.AdapterOptions>} [options={}]
+     */
+    constructor(options) {
+        super({
+            ...options,
+            name: 'dali',
+            //systemConfig:  true
+            
+        });
+        this.on('ready', this.onReady.bind(this));
+        this.on('objectChange', this.onObjectChange.bind(this));
+        this.on('stateChange', this.onStateChange.bind(this));
+        // this.on('message', this.onMessage.bind(this));
+        this.on('unload', this.onUnload.bind(this));
+    
+    
     }
+
+    /**
+     * Is called when databases are connected and adapter received configuration.
+     */
+    async onReady() {
+
+        /*const t = new test(this);
+        
+        t.read();*/
+
+        //this.setState('info.connection', true);
+
+        this.device = new first(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+        this.log.debug('AFTER NEW');
+        //const lamps = await this.device.startSearch(0);
+        this.log.debug('AFTER SEARCHG');
+        //this.log.debug(JSON.stringify(lamps));
+        
+      
+        
+        if(this.config.bus0) {
+            this.log.info('Bus0 is select')
+            this.createDATAPOINTS(0);
+            const lamps = await this.device.startSearch(0);
+            this.log.debug("respones light bus0 " + JSON.stringify(lamps))
+ 
+            for (var i in lamps) {
+                  this.log.info("id " + lamps[i].value)
+                  this.log.info("id " + lamps[i].name)
+
+               if (lamps[i].value === true && lamps[i].name.indexOf('a')===0) {
+                    this.log.info('lamp ' + i + ' created');
+
+                    const Pfad = this.namespace + ".bus0.lamps." + i;
+                    this.setObjectNotExistsAsync(Pfad,{
+                    _id: Pfad,
+                    type: 'state',
+                    common: {
+                        name: 'lamp ' + i,
+                        type: 'number',
+                        role: 'level',
+                        read: true,
+                        write: true,
+                        min: 0,
+                        max: 100,
+                        def: 0,
+                        unit: "%"
+                        },
+                        "native": {}
+                    });
+                }
+                else if(lamps[i].value === true){
+                    this.log.info('group ' + i + ' created');
+
+                    const Pfad = this.namespace + ".bus0.groups." + i;
+                    this.setObjectNotExistsAsync(Pfad,{
+                    _id: Pfad,
+                    type: 'state',
+                    common: {
+                        name: 'lamp ' + i,
+                        type: 'number',
+                        role: 'level',
+                        read: true,
+                        write: true,
+                        min: 0,
+                        max: 100,
+                        def: 0,
+                        unit: "%"
+                        },
+                        "native": {}
+                    });
+                }
+            }
+        };
+        
+
+
+        this.device.getexistslamp();
+            
+        //if(this.config.bus0.obj.state.val != this.config.bus0.obj.oldState.val) {
+          
+            //lamps[1] ? device.startSearchLamp(1);
+        //}
+
+        
+        
+        this.log.info('config Bus0: ' + this.config.bus0);
+        this.log.info('config Bus1: ' + this.config.bus1);
+        this.log.info('config Bus2: ' + this.config.bus2);
+        this.log.info('config Bus3: ' + this.config.bus3);
+        this.log.info('config IP: ' + this.config.host);
+        this.log.info('config Port: ' + this.config.port);
+      
+
+       
+        
+ 
+
+     /*tcpp.probe(this.config.host, this.config.port, (err, available) =>{
+     this.log.info("Verbindung " + available)
+     this.setState('info.connection', available);});*/
+
+
+        //this.setState('Bus0', { val: true, ack: true });
+
+        this.subscribeStates('*');
+    }
+
+    /**
+     * Is called when adapter shuts down - callback has to be called under any circumstances!
+     * @param {() => void} callback
+     */
+    onUnload(callback) {
+
+        if(this.device) {
+            this.device.client.destroy();
+            this.log.debug('Device destroyed');
+            
+        }
+
+        try {
+            this.log.info('cleaned everything up...');
+            callback();
+        } catch (e) {
+            callback();
+        }
+    }
+
+    /**
+     * Is called if a subscribed object changes
+     * @param {string} id
+     * @param {ioBroker.Object | null | undefined} obj
+     */
+    onObjectChange(id, obj) {
+        if (obj) {
+            // The object was changed
+            this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
+            
+        } else {
+            // The object was deleted
+            this.log.info(`object ${id} deleted`);
+        }
+    }
+
+    /**
+     * Is called if a subscribed state changes
+     * @param {string} id
+     * @param {ioBroker.State | null | undefined} state
+     */
+    onStateChange(id, state) {
+        this.device = new first(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+        if (state && state.ack !== true) {
+
+            if(id.startsWith(this.namespace + '.bus0.lamps.')) {
+                const name = id.substring(id.lastIndexOf('.') + 1);
+                this.device.sendlampState(0, state.val, name); 
+            }
+            else if(id.startsWith(this.namespace + '.bus0.groups.')) {
+                const name = id.substring(id.lastIndexOf('.') + 1);
+                this.device.sendGroupState(0, state.val, name); 
+            }
+            else if(id.startsWith(this.namespace + '.bus0.scenes.')) {
+                const name = id.substring(id.lastIndexOf('.') + 1);
+                if (state.val){
+                this.device.sendScene(0, name); }
+            }
+            else if(id == this.namespace + '.bus0.broadcast0') {
+                this.device.sendBroadcast(0, state.val);  
+            }
+            
+            // The state was changed
+            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+        } else {
+            // The state was deleted
+            this.log.info(`state ${id} deleted`);
+        }
+    }
+
+
+    createDATAPOINTS (bus){
+
+        
+                /*for (let g=0; g<16;g++){
+                    let gn; if(g<10){gn ='0'+g;} else{gn=g;}
+
+                    this.setObjectNotExistsAsync('bus'+ bus + '.groups.g' + gn, {
+                        _id: 'bus'+ bus + '.groups.group' + gn,
+                        type: 'state',
+                        common: {
+                            name: 'Group ' + gn,
+                            role: 'level',
+                            type: 'number',
+                            read: true,
+                            write: true,
+                            min: 0,
+                            max: 100,
+                            def: 0,
+                            unit: "%"
+                        },
+                            "native": {}
+                    });
+                }*/
+                for (let s=0; s<16;s++){
+                    let sn; if(s<10){sn ='0'+s;} else{sn=s;}
+
+                    this.setObjectNotExistsAsync('bus'+ bus + '.scenes.scene' + sn, {
+                        id: 'bus'+ bus + '.scenes.scene' + sn,
+                        type: 'state',
+                        common: {
+                            name: "Scene " + sn,
+                            type: 'boolean',
+                            role: 'button',
+                            read: false,
+                            write: true,
+                            def: false
+                        },
+                            "native": {}
+                    });
+                }
+                this.setObjectNotExistsAsync('bus'+ bus + '.broadcast' + bus, {
+                        _id: 'bus'+ bus + '.broadcast' + bus,
+                        type: 'state',
+                        common: {
+                            name: "Broadcast " + bus,
+                            role: 'level',
+                            type: "number",
+                            read: true,
+                            write: true,
+                            min: 0,
+                            max: 100,
+                            def: 0,
+                            unit: "%"
+                        },
+                            "native": {}
+                    });
+            }  
+    
 }
+
+
+
+
+
+
+
+
+if (module.parent) {
+    // Export the constructor in compact mode
+    /**
+     * @param {Partial<ioBroker.AdapterOptions>} [options={}]
+     */
+    module.exports = (options) => new Dali(options);
+} else {
+    // otherwise start the instance directly
+    new Dali();
+}
+
+

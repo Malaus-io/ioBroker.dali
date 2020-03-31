@@ -25,7 +25,7 @@ DALI is a standardized digital protocol for the control of electronic ballasts f
 ## License
 MIT License
 
-Copyright (c) 2020 Malaus <petermuellers300@gmail.com>
+Copyright (c) 2020 Malaus
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
