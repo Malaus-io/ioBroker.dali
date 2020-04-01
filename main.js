@@ -4,8 +4,8 @@ const utils = require('@iobroker/adapter-core');
 const net = require('net');
 const tcpp = require('tcp-ping');
 
-const dali = require('./lib/dali');
-
+const dali = require('./lib/getdali');
+const dalisend = require('./lib/setdali');
 
 
 class Dali extends utils.Adapter {
@@ -60,16 +60,10 @@ class Dali extends utils.Adapter {
                     this.createStateData(path, 'Group ' + i);
                 }
             }
+            this.device.startCounter();
         };
     
        
-        this.device.startCounter();
-            
-        //if(this.config.bus0.obj.state.val != this.config.bus0.obj.oldState.val) {
-          
-            //lamps[1] ? device.startSearchLamp(1);
-        //}
-
         this.log.info('config Bus0: ' + this.config.bus0);
         this.log.info('config Bus1: ' + this.config.bus1);
         this.log.info('config Bus2: ' + this.config.bus2);
@@ -93,6 +87,8 @@ class Dali extends utils.Adapter {
      */
     onUnload(callback) {
 
+        this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+
         if(this.device) {
             this.device.destroy();
             this.log.debug('Device destroyed');
@@ -113,8 +109,8 @@ class Dali extends utils.Adapter {
      */
     onStateChange(id, state) {
 
-        this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
-        
+        //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+        this.device = new dalisend(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
         if(state && state.ack !== true) {
 
             const name = id.substring(id.lastIndexOf('.') + 1);
