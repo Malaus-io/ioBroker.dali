@@ -16,8 +16,12 @@ The DALI 4Net can be used for commissioning and control of DALI lighting systems
 
 DALI is a standardized digital protocol for the control of electronic ballasts for lighting systems according to standard IEC62386. Exclusively ballast or control devices with DALI interface may be connected to one of the DALI-lines.
 
+With ioBroker Dali Adapter the DALI 4Net can be accessed for control and visualisation.
 
 ## Changelog
+
+### 0.0.2
+* (Malaus) get the ID´s & States of your Dali lighting system
 
 ### 0.0.1
 * (Malaus) initial release
