@@ -44,22 +44,22 @@
 			<div class='field'>
 				<div class="input-field col s3">
 					<i class="material-icons prefix">public</i>
-					<input id="host" type="text" class="value" class="translate" minlength="7" maxlength="15" size="15" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$">
-					<label for="host">IP Address</label>
+					<input id="host" type="text" class="value"  minlength="7" maxlength="15" size="15" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$">
+					<label class="translate" for="host">IP Address</label>
 				</div>
 				<div class="input-field col s3">
 					<i class="material-icons prefix">receipt</i>
 					<input id="port" type="number" min="1" max="65565" class="value" value="502">
-					<label for="port">Port</label>
+					<label class="translate" for="port">Port</label>
 				</div>  
 			</div>
 		</div> 
 		<div class="row">
 			<div class="ch">
 				<div class="card-panel blue-grey lighten-3">
-					<span class="white-text translate">
+					<label class="white-text" class="translate">
 						Choose which bus network you want to use.
-				    </span>
+				    </label>
 					<form action="#">
 						<div class="col s3 input-field">
 							<input id= "bus0" type="checkbox" class='value'/>

@@ -14,28 +14,27 @@ systemDictionary = {
         'pl': 'Ustawienia adaptera dla dali',
         'zh-cn': 'dali的适配器设置'
     },
-    'IP Adress': {
-        'en': 'IP Adress',
+    'IP Address': {
+        'en': 'IP Address',
         'de': 'IP Adresse',
-        'ru': 'Опция 1',
-        'pt': 'Opção 1',
-        'nl': 'Optie 1',
-        'fr': 'Option 1',
-        'it': 'opzione 1',
-        'es': 'Opción 1',
-        'pl': 'opcja 1',
-        'zh-cn': '选项1'
+        "ru": "Айпи адрес",
+        "pt": "Endereço de IP",
+        "nl": "IP adres",
+        "fr": "Adresse IP",
+        "it": "Indirizzo IP",
+        "es": "Dirección IP",
+        "pl": "Adres IP",
+        "zh-cn": "IP地址"
     },
-    'Choose which bus network you want to use.': {
-        'en': 'Choose which bus network you want to use.',
-        'de': 'Wähle das Bus Netzwerk aus, das du verwenden möchtest.',
-        'ru': 'option2',
-        'pt': 'opção 2',
-        'nl': 'Optie 2',
-        'fr': 'Option 2',
-        'it': 'opzione 2',
-        'es': 'opcion 2',
-        'pl': 'Opcja 2',
-        'zh-cn': '选项2'
-    }
+    "Choose which bus network you want to use.": {
+        "en": "Choose which bus network you want to use.",
+        "de": "Wählen Sie das Busnetz aus, das Sie verwenden möchten.",
+        "ru": "Выберите, какую сеть шин вы хотите использовать.",
+        "pt": "Escolha a rede de barramento que você deseja usar.",
+        "nl": "Kies welk busnetwerk je wilt gebruiken.",
+        "fr": "Choisissez le réseau de bus que vous souhaitez utiliser.",
+        "it": "Scegli quale rete bus vuoi usare.",
+        "es": "Elija qué red de autobuses quiere usar.",
+        "pl": "Wybierz sieć magistrali, której chcesz użyć.",
+        "zh-cn": "选择您要使用的总线网络。"}
 };
