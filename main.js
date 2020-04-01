@@ -33,34 +33,37 @@ class Dali extends utils.Adapter {
         this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
 
         if(this.config.bus0) {
-            this.log.info('Bus0 is select');
+            this.log.debug('Bus0 is select');
+
             this.createDatapoints(0);
+            
             const lamps = await this.device.startSearch(0);
             this.log.debug('Respones light bus0 ' + JSON.stringify(lamps));
  
             for(const i in lamps) {
-                  this.log.debug("id " + lamps[i].value);
-                  this.log.debug("id " + lamps[i].name);
+                  this.log.debug("id name " + lamps[i].value);
+                  this.log.debug("id value " + lamps[i].name);
 
                 if(lamps[i].value === true && lamps[i].name.indexOf('a') === 0) {
-                    this.log.info('lamp ' + i + ' created');
+                    this.log.debug('lamp ' + i + ' created');
 
-                    const path = this.namespace + ".bus0.lamps." + i;
-
-                    this.createState(path, 'Lamp ' + i);
+                    const path = 'bus0.lamps.' + i;
+                    this.log.debug('path ' + path);
+                    this.createStateData(path, 'Lamp ' + i);
 
                 } else if(lamps[i].value === true) {
 
-                    this.log.info('group ' + i + ' created');
+                    this.log.debug('group ' + i + ' created');
 
-                    const path = this.namespace + ".bus0.groups." + i;
+                    const path = 'bus0.groups.' + i;
 
-                    this.createState(path, 'Group ' + i);
+                    this.createStateData(path, 'Group ' + i);
                 }
             }
         };
-
-        this.device.getExistsLamp();
+    
+       
+        this.device.startCounter();
             
         //if(this.config.bus0.obj.state.val != this.config.bus0.obj.oldState.val) {
           
@@ -143,13 +146,25 @@ class Dali extends utils.Adapter {
     }
 
 
-    createDatapoints(bus) {
+    async createDatapoints(bus) {
 
+        this.setObjectNotExistsAsync('bus' + bus, {
+            type: 'device',
+            common: {
+                name: 'bus' + bus
+            },
+            native: {}
+        });
+
+        this.createChan('bus' + bus + '.lamps' , 'lamps');
+        this.createChan('bus' + bus + '.groups', 'groups');
+        this.createChan('bus' + bus + '.scenes', 'scenes');
+    
         for (let s = 0; s < 16; s++) {
 
             const sn = (s < 10) ? '0' + s : s;
 
-            this.setObjectNotExistsAsync('bus' + bus + '.scenes.scene' + sn, {
+            this.setObjectNotExistsAsync('bus' + bus + '.scenes.s' + sn, {
                 type: 'state',
                 common: {
                     name: "Scene " + sn,
@@ -163,18 +178,19 @@ class Dali extends utils.Adapter {
             });
         }
 
-        this.createState('bus' + bus + '.broadcast' + bus, 'Broadcast ' + bus);
+        this.createStateData('bus' + bus + '.broadcast' + bus, 'Broadcast' + bus);
     }
 
-    createState(id, name, role = 'level.dimmer', type = 'number', read = true, write = true) {
+    createStateData(id, name) {
+
         this.setObjectNotExistsAsync(id, {
             type: 'state',
             common: {
                 name: name,
-                role: role,
-                type: type,
-                read: read,
-                write: write,
+                role: 'level.dimmer',
+                type: 'number',
+                read: true,
+                write: true,
                 min: 0,
                 max: 100,
                 def: 0,
@@ -183,9 +199,19 @@ class Dali extends utils.Adapter {
             native: {}
         });
     }
+    
+    async createChan(id, name){
+        
+        this.setObjectNotExistsAsync(id, {
+            type: 'channel',
+            common: {
+                name: name
+            },
+            native: {}
+        });
+    }
+
 }
-
-
 
 
 
