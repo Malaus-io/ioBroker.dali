@@ -122,25 +122,27 @@ class Dali extends utils.Adapter {
         //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
         this.device = new dalisend(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
         if(state && state.ack !== true) {
-
+            
+            const busno = this.getbusnumber(id);
             const name = id.substring(id.lastIndexOf('.') + 1);
 
-            if(id.startsWith(this.namespace + '.bus0.lamps.')) {
+            if(id.startsWith(this.namespace + '.bus' + busno +'.lamps.')) {
 
-                this.device.sendLampState(0, state.val, name); 
+                this.device.sendLampState(busno, state.val, name); 
 
-            } else if(id.startsWith(this.namespace + '.bus0.groups.')) {
+            } else if(id.startsWith(this.namespace + '.bus' + busno + '.groups.')) {
 
-                this.device.sendGroupState(0, state.val, name); 
+                this.device.sendGroupState(busno, state.val, name); 
 
-            } else if(id.startsWith(this.namespace + '.bus0.scenes.')) {
+            } else if(id.startsWith(this.namespace + '.bus' + busno + '.scenes.')) {
 
                 if(state.val) {
-                    this.device.sendScene(0, name);
+                    this.device.sendScene(busno, name);
+                    this.setState(this.namespace + '.bus' + busno + '.scenes.' + name, false);
                 }
 
-            } else if(id == this.namespace + '.bus0.broadcast0') {
-                this.device.sendBroadcast(0, state.val);  
+            } else if(id == this.namespace + '.bus' + busno + '.broadcast0') {
+                this.device.sendBroadcast(busno, state.val);  
             }
             
             // The state was changed
@@ -183,7 +185,14 @@ class Dali extends utils.Adapter {
         }
     };
 
+    getbusnumber(id){
+    
+        if (id.indexOf('bus0')===7){ return 0}
+        else if (id.indexOf('bus1')===7){ return 1}
+        else if (id.indexOf('bus2')===7){ return 2}
+        else if (id.indexOf('bus3')===7){ return 3};
 
+    }
 
     async createDatapoints(bus) {
 
@@ -207,8 +216,8 @@ class Dali extends utils.Adapter {
                 type: 'state',
                 common: {
                     name: "Scene " + sn,
-                    type: 'boolean',
                     role: 'button',
+                    type: 'boolean',
                     read: false,
                     write: true,
                     def: false
