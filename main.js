@@ -4,8 +4,8 @@ const utils = require('@iobroker/adapter-core');
 const net = require('net');
 const tcpp = require('tcp-ping');
 
-const dali = require('./lib/dali');
-
+const dali = require('./lib/getdali');
+const dalisend = require('./lib/setdali');
 
 
 class Dali extends utils.Adapter {
@@ -33,42 +33,46 @@ class Dali extends utils.Adapter {
         this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
 
         if(this.config.bus0) {
+
             this.log.debug('Bus0 is select');
 
-            this.createDatapoints(0);
+            this.lamps = await this.device.startSearch(0);
+            this.log.debug('Respones light bus0 ' + JSON.stringify(this.lamps));
             
-            const lamps = await this.device.startSearch(0);
-            this.log.debug('Respones light bus0 ' + JSON.stringify(lamps));
- 
-            for(const i in lamps) {
-                  this.log.debug("id name " + lamps[i].value);
-                  this.log.debug("id value " + lamps[i].name);
+            this.searchDaliBus(0, this.lamps);
+        };
+        if(this.config.bus1) {
 
-                if(lamps[i].value === true && lamps[i].name.indexOf('a') === 0) {
-                    this.log.debug('lamp ' + i + ' created');
+            this.log.debug('Bus1 is select');
 
-                    const path = 'bus0.lamps.' + i;
-                    this.log.debug('path ' + path);
-                    this.createStateData(path, 'Lamp ' + i);
+            this.lamps = await this.device.startSearch(1);
+            this.log.debug('Respones light bus0 ' + JSON.stringify(this.lamps));
 
-                } else if(lamps[i].value === true) {
+            this.searchDaliBus(1, this.lamps);
+        };
+        if(this.config.bus2) {
 
-                    this.log.debug('group ' + i + ' created');
+            this.log.debug('Bus2 is select');
 
-                    const path = 'bus0.groups.' + i;
+            this.lamps = await this.device.startSearch(2);
+            this.log.debug('Respones light bus0 ' + JSON.stringify(this.lamps));
 
-                    this.createStateData(path, 'Group ' + i);
-                }
-            }
+            this.searchDaliBus(2, this.lamps);
+        };
+        if(this.config.bus3) {
+
+            this.log.debug('Bus3 is select');
+
+            this.lamps = await this.device.startSearch(3);
+            this.log.debug('Respones light bus0 ' + JSON.stringify(this.lamps));
+
+            this.searchDaliBus(3, this.lamps);
         };
     
-       
-        this.device.startCounter();
-            
-        //if(this.config.bus0.obj.state.val != this.config.bus0.obj.oldState.val) {
-          
-            //lamps[1] ? device.startSearchLamp(1);
-        //}
+        if (this.config.bus0 || this.config.bus1 || this.config.bus2 || this.config.bus3){
+            this.device.startCounter();
+        }
+        //this.device.startCounter();
 
         this.log.info('config Bus0: ' + this.config.bus0);
         this.log.info('config Bus1: ' + this.config.bus1);
@@ -93,6 +97,8 @@ class Dali extends utils.Adapter {
      */
     onUnload(callback) {
 
+        this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+
         if(this.device) {
             this.device.destroy();
             this.log.debug('Device destroyed');
@@ -113,28 +119,30 @@ class Dali extends utils.Adapter {
      */
     onStateChange(id, state) {
 
-        this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
-        
+        //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+        this.device = new dalisend(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
         if(state && state.ack !== true) {
-
+            
+            const busno = this.getbusnumber(id);
             const name = id.substring(id.lastIndexOf('.') + 1);
 
-            if(id.startsWith(this.namespace + '.bus0.lamps.')) {
+            if(id.startsWith(this.namespace + '.bus' + busno +'.lamps.')) {
 
-                this.device.sendLampState(0, state.val, name); 
+                this.device.sendLampState(busno, state.val, name); 
 
-            } else if(id.startsWith(this.namespace + '.bus0.groups.')) {
+            } else if(id.startsWith(this.namespace + '.bus' + busno + '.groups.')) {
 
-                this.device.sendGroupState(0, state.val, name); 
+                this.device.sendGroupState(busno, state.val, name); 
 
-            } else if(id.startsWith(this.namespace + '.bus0.scenes.')) {
+            } else if(id.startsWith(this.namespace + '.bus' + busno + '.scenes.')) {
 
                 if(state.val) {
-                    this.device.sendScene(0, name);
+                    this.device.sendScene(busno, name);
+                    this.setState(this.namespace + '.bus' + busno + '.scenes.' + name, false);
                 }
 
-            } else if(id == this.namespace + '.bus0.broadcast0') {
-                this.device.sendBroadcast(0, state.val);  
+            } else if(id == this.namespace + '.bus' + busno + '.broadcast0') {
+                this.device.sendBroadcast(busno, state.val);  
             }
             
             // The state was changed
@@ -145,6 +153,46 @@ class Dali extends utils.Adapter {
         }
     }
 
+
+    async searchDaliBus(bus, lamps){
+
+        //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+        
+        this.createDatapoints(bus);
+                
+        //const lamps = await this.device.startSearch(bus);
+        //this.log.debug('Respones light bus0 ' + JSON.stringify(lamps));
+
+        for(const i in lamps) {
+            this.log.debug("id name " + lamps[i].value);
+            this.log.debug("id value " + lamps[i].name);
+
+            if(lamps[i].name.indexOf('a') === 0) {
+                this.log.debug('lamp ' + i + ' created');
+
+                const path = 'bus' + bus + '.lamps.' + i;
+                this.log.debug('path ' + path);
+                this.createStateData(path, 'Lamp ' + i);
+
+            } else if(lamps[i].value === true) {
+
+                this.log.debug('group ' + i + ' created');
+
+                const path = 'bus' + bus + '.groups.' + i;
+
+                this.createStateData(path, 'Group ' + i);
+            }
+        }
+    };
+
+    getbusnumber(id){
+    
+        if (id.indexOf('bus0')===7){ return 0}
+        else if (id.indexOf('bus1')===7){ return 1}
+        else if (id.indexOf('bus2')===7){ return 2}
+        else if (id.indexOf('bus3')===7){ return 3};
+
+    }
 
     async createDatapoints(bus) {
 
@@ -168,8 +216,8 @@ class Dali extends utils.Adapter {
                 type: 'state',
                 common: {
                     name: "Scene " + sn,
-                    type: 'boolean',
                     role: 'button',
+                    type: 'boolean',
                     read: false,
                     write: true,
                     def: false

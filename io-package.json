@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "dali",
-        "version": "0.0.1",
+        "version": "0.0.2",
         "news": {
+            "0.0.2":{
+                "en": "get and set States of your Dali lighting system",
+                "de": "Erhalten und Einstellen der Zustände Ihres Dali-Beleuchtungssystems",
+                "ru": "получить и установить состояния вашей системы освещения Dali",
+                "pt": "obter e definir estados do seu sistema de iluminação Dali",
+                "nl": "haal en stel staten van uw Dali-verlichtingssysteem in",
+                "fr": "obtenir et définir les états de votre système d'éclairage Dali",
+                "it": "ottenere e impostare gli stati del sistema di illuminazione Dali",
+                "es": "Obtenga y configure los estados de su sistema de iluminación Dali",
+                "pl": "uzyskać i ustawić stany swojego systemu oświetlenia Dali",
+                "zh-cn": "获取并设置您的Dali照明系统的状态"
+              },
             "0.0.1": {
                 "en": "initial release",
                 "de": "Erstveröffentlichung",
