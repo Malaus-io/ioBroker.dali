@@ -18,10 +18,15 @@ DALI is a standardized digital protocol for the control of electronic ballasts f
 
 With ioBroker Dali Adapter the DALI 4Net can be accessed for control and visualisation.
 
+On the current version you can import your Dali network into the ioBroker. See and control the level of your lamps.
+
+Coming soon will get more information in ioBroker from your Dali devices.
+
+
 ## Changelog
 
 ### 0.0.2
-* (Malaus) get the ID´s & States of your Dali lighting system
+* (Malaus) get and set States of your Dali lighting system
 
 ### 0.0.1
 * (Malaus) initial release
