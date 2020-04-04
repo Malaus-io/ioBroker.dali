@@ -25,6 +25,9 @@ Coming soon will get more information in ioBroker from your Dali devices.
 
 ## Changelog
 
+### 0.0.3
+* (Malaus) fix send Message
+
 ### 0.0.2
 * (Malaus) get and set States of your Dali lighting system
 
