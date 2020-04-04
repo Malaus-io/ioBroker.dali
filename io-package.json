@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "dali",
-        "version": "0.0.2",
+        "version": "0.0.3",
         "news": {
+            "0.0.3":{
+                "en": "fix send Message",
+                "de": "Fix Sende Nachricht",
+                "ru": "исправить отправить сообщение",
+                "pt": "fix send message",
+                "nl": "fix stuur bericht",
+                "fr": "fixer envoyer un message",
+                "it": "correzione invia messaggio",
+                "es": "arreglar enviar mensaje",
+                "pl": "naprawić wyślij wiadomość",
+                "zh-cn": "修复发送消息"
+                },
             "0.0.2":{
                 "en": "get and set States of your Dali lighting system",
                 "de": "Erhalten und Einstellen der Zustände Ihres Dali-Beleuchtungssystems",
