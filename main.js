@@ -1,22 +1,20 @@
 'use strict';
 
 const utils = require('@iobroker/adapter-core');
-const net = require('net');
-const tcpp = require('tcp-ping');
+/*const net = require('net');
+const tcpp = require('tcp-ping');*/
 
-const dali = require('./lib/getdali');
-const dalisend = require('./lib/setdali');
-
+const dali = require('./lib/dali');
 
 class Dali extends utils.Adapter {
 
     /**
-     * @param {Partial<ioBroker.AdapterOptions>} [options={}]
+     * @param {Partial<ioBroker.AdapterOptions>} [options= {}]
      */
     constructor(options) {
-        super({
-            ...options,
-            name: 'dali',
+        super( {
+            ...options, 
+            name: 'dali', 
             //systemConfig:  true
             
         });
@@ -30,7 +28,8 @@ class Dali extends utils.Adapter {
      */
     async onReady() {
 
-        this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
+        this.device = new dali(this, this.config.host, this.config.port, 
+            this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
 
         if(this.config.bus0) {
 
@@ -69,10 +68,10 @@ class Dali extends utils.Adapter {
             this.searchDaliBus(3, this.lamps);
         };
     
-        if (this.config.bus0 || this.config.bus1 || this.config.bus2 || this.config.bus3){
+        if (this.config.bus0 || this.config.bus1 || this.config.bus2 || this.config.bus3) {
             this.device.startCounter();
         }
-        //this.device.startCounter();
+
 
         this.log.info('config Bus0: ' + this.config.bus0);
         this.log.info('config Bus1: ' + this.config.bus1);
@@ -81,12 +80,11 @@ class Dali extends utils.Adapter {
         this.log.info('config IP: ' + this.config.host);
         this.log.info('config Port: ' + this.config.port);
       
-     /*tcpp.probe(this.config.host, this.config.port, (err, available) =>{
-     this.log.info("Verbindung " + available)
+     /*tcpp.probe(this.config.host, this.config.port, (err, available) => {
+     this.log.info('Verbindung ' + available)
      this.setState('info.connection', available);});*/
 
 
-        //this.setState('Bus0', { val: true, ack: true });
 
         this.subscribeStates('*');
     }
@@ -96,8 +94,6 @@ class Dali extends utils.Adapter {
      * @param {() => void} callback
      */
     onUnload(callback) {
-
-        this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
 
         if(this.device) {
             this.device.destroy();
@@ -119,16 +115,14 @@ class Dali extends utils.Adapter {
      */
     onStateChange(id, state) {
 
-        //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
-        this.device = new dalisend(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
-        if(state && state.ack !== true) {
+        if(state && state.ack !== true && this.device) {
             
             const busno = this.getbusnumber(id);
             const name = id.substring(id.lastIndexOf('.') + 1);
 
             if(id.startsWith(this.namespace + '.bus' + busno +'.lamps.')) {
 
-                this.device.sendLampState(busno, state.val, name); 
+                this.device.sendLampState(busno, state.val, name);
 
             } else if(id.startsWith(this.namespace + '.bus' + busno + '.groups.')) {
 
@@ -146,26 +140,21 @@ class Dali extends utils.Adapter {
             }
             
             // The state was changed
-            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+            //this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
         } else {
             // The state was deleted
-            this.log.info(`state ${id} deleted`);
+            //this.log.info(`state ${id} deleted`);
         }
     }
 
 
-    async searchDaliBus(bus, lamps){
+    async searchDaliBus(bus, lamps) {
 
-        //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
-        
         this.createDatapoints(bus);
                 
-        //const lamps = await this.device.startSearch(bus);
-        //this.log.debug('Respones light bus0 ' + JSON.stringify(lamps));
-
         for(const i in lamps) {
-            this.log.debug("id name " + lamps[i].value);
-            this.log.debug("id value " + lamps[i].name);
+            this.log.debug('id name ' + lamps[i].value);
+            this.log.debug('id value ' + lamps[i].name);
 
             if(lamps[i].name.indexOf('a') === 0) {
                 this.log.debug('lamp ' + i + ' created');
@@ -174,7 +163,7 @@ class Dali extends utils.Adapter {
                 this.log.debug('path ' + path);
                 this.createStateData(path, 'Lamp ' + i);
 
-            } else if(lamps[i].value === true) {
+            } else {
 
                 this.log.debug('group ' + i + ' created');
 
@@ -185,22 +174,22 @@ class Dali extends utils.Adapter {
         }
     };
 
-    getbusnumber(id){
+    getbusnumber(id) {
     
-        if (id.indexOf('bus0')===7){ return 0}
-        else if (id.indexOf('bus1')===7){ return 1}
-        else if (id.indexOf('bus2')===7){ return 2}
-        else if (id.indexOf('bus3')===7){ return 3};
+        if (id.indexOf('bus0')===7) { return 0}
+        else if (id.indexOf('bus1')===7) { return 1}
+        else if (id.indexOf('bus2')===7) { return 2}
+        else if (id.indexOf('bus3')===7) { return 3};
 
     }
 
     async createDatapoints(bus) {
 
         this.setObjectNotExistsAsync('bus' + bus, {
-            type: 'device',
+            type: 'device', 
             common: {
                 name: 'bus' + bus
-            },
+            }, 
             native: {}
         });
 
@@ -213,15 +202,15 @@ class Dali extends utils.Adapter {
             const sn = (s < 10) ? '0' + s : s;
 
             this.setObjectNotExistsAsync('bus' + bus + '.scenes.s' + sn, {
-                type: 'state',
+                type: 'state', 
                 common: {
-                    name: "Scene " + sn,
-                    role: 'button',
-                    type: 'boolean',
-                    read: false,
-                    write: true,
+                    name: 'Scene ' + sn, 
+                    role: 'button', 
+                    type: 'boolean', 
+                    read: false, 
+                    write: true, 
                     def: false
-                },
+                }, 
                 native: {}
             });
         }
@@ -232,29 +221,29 @@ class Dali extends utils.Adapter {
     createStateData(id, name) {
 
         this.setObjectNotExistsAsync(id, {
-            type: 'state',
+            type: 'state', 
             common: {
-                name: name,
-                role: 'level.dimmer',
-                type: 'number',
-                read: true,
-                write: true,
-                min: 0,
-                max: 100,
-                def: 0,
+                name: name, 
+                role: 'level.dimmer', 
+                type: 'number', 
+                read: true, 
+                write: true, 
+                min: 0, 
+                max: 100, 
+                def: 0, 
                 unit: '%'
-            },
+            }, 
             native: {}
         });
     }
     
-    async createChan(id, name){
+    async createChan(id, name) {
         
         this.setObjectNotExistsAsync(id, {
-            type: 'channel',
+            type: 'channel', 
             common: {
                 name: name
-            },
+            }, 
             native: {}
         });
     }
@@ -262,14 +251,10 @@ class Dali extends utils.Adapter {
 }
 
 
-
-
-
-
-if (module.parent) {
+if(module.parent) {
     // Export the constructor in compact mode
     /**
-     * @param {Partial<ioBroker.AdapterOptions>} [options={}]
+     * @param {Partial<ioBroker.AdapterOptions>} [options= {}]
      */
     module.exports = (options) => new Dali(options);
 } else {

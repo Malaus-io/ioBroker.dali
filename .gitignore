@@ -7,6 +7,8 @@ nbproject
 
 .DS_Store
 
+.github/.DS_Store
+
 # npm package files
 iobroker.*.tgz
 
