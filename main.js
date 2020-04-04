@@ -71,7 +71,7 @@ class Dali extends utils.Adapter {
         if (this.config.bus0 || this.config.bus1 || this.config.bus2 || this.config.bus3) {
             this.device.startCounter();
         }
-        //this.device.startCounter();
+
 
         this.log.info('config Bus0: ' + this.config.bus0);
         this.log.info('config Bus1: ' + this.config.bus1);
@@ -85,7 +85,6 @@ class Dali extends utils.Adapter {
      this.setState('info.connection', available);});*/
 
 
-        //this.setState('Bus0', { val: true, ack: true });
 
         this.subscribeStates('*');
     }
@@ -116,8 +115,6 @@ class Dali extends utils.Adapter {
      */
     onStateChange(id, state) {
 
-        //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
-        //this.device = new dalisend(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
         if(state && state.ack !== true && this.device) {
             
             const busno = this.getbusnumber(id);
@@ -143,7 +140,7 @@ class Dali extends utils.Adapter {
             }
             
             // The state was changed
-            this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+            //this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
         } else {
             // The state was deleted
             //this.log.info(`state ${id} deleted`);
@@ -153,13 +150,8 @@ class Dali extends utils.Adapter {
 
     async searchDaliBus(bus, lamps) {
 
-        //this.device = new dali(this, this.config.host, this.config.port, this.config.bus0, this.config.bus1, this.config.bus2, this.config.bus3);
-        
         this.createDatapoints(bus);
                 
-        //const lamps = await this.device.startSearch(bus);
-        //this.log.debug('Respones light bus0 ' + JSON.stringify(lamps));
-
         for(const i in lamps) {
             this.log.debug('id name ' + lamps[i].value);
             this.log.debug('id value ' + lamps[i].name);
@@ -257,10 +249,6 @@ class Dali extends utils.Adapter {
     }
 
 }
-
-
-
-
 
 
 if(module.parent) {
