@@ -170,6 +170,13 @@ class Dali extends utils.Adapter {
                 this.createStateInfo(path + 'group', 'Groupmember', lamps[i].group);
                 this.createStateInfo(path + 'min', 'Physical min Level', lamps[i].min + '%');
 
+            } else if(lamps[i].name.indexOf('e')===0) {
+                this.log.debug('device ' + i + ' created');
+
+                const path = 'bus' + bus + '.device.' + i + '.';
+                this.createStateData(path + i, 'Device ' + i, lamps[i].value, 0, 100, '', 'switch');
+                this.createStateInfo(path + 'mode', 'Access Mode', lamps[i].mode);
+
             } else {
 
                 this.log.debug('group ' + i + ' created');
@@ -225,20 +232,20 @@ class Dali extends utils.Adapter {
         this.createStateData('bus' + bus + '.broadcast' + bus, 'Broadcast' + bus);
     }
 
-    createStateData(id, name, value) {
+    createStateData(id, name, value, min = 0, max = 100, unit = '%', role = 'level.dimmer') {
 
         this.setObjectNotExistsAsync(id, {
             type: 'state', 
             common: {
                 name: name, 
-                role: 'level.dimmer', 
+                role: role, 
                 type: 'number', 
                 read: true, 
                 write: true, 
-                min: 0, 
-                max: 100, 
+                min: min, 
+                max: max, 
                 def: 0, 
-                unit: '%'
+                unit: unit
             }, 
             native: {}
         });
