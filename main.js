@@ -165,7 +165,7 @@ class Dali extends utils.Adapter {
 
                 const path = 'bus' + bus + '.lamps.' + i + '.';
                 
-                this.createStateData(path + i, 'Lamp ' + i);
+                this.createStateData(path + i, 'Lamp ' + i, lamps[i].value);
                 this.createStateInfo(path + 'device', 'Device Type', lamps[i].device);
                 this.createStateInfo(path + 'group', 'Groupmember', lamps[i].group);
                 this.createStateInfo(path + 'min', 'Physical min Level', lamps[i].min + '%');
@@ -225,7 +225,7 @@ class Dali extends utils.Adapter {
         this.createStateData('bus' + bus + '.broadcast' + bus, 'Broadcast' + bus);
     }
 
-    createStateData(id, name) {
+    createStateData(id, name, value) {
 
         this.setObjectNotExistsAsync(id, {
             type: 'state', 
@@ -242,6 +242,7 @@ class Dali extends utils.Adapter {
             }, 
             native: {}
         });
+        this.setState(id, value, true);
     }
 
     createStateInfo(id, name, value) {
@@ -257,7 +258,7 @@ class Dali extends utils.Adapter {
             }, 
             native: {}
         });
-        this.setState(id, value);
+        this.setState(id, value, true);
     }
     
     async createChan(id, name) {
