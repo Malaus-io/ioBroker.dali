@@ -3,6 +3,7 @@
 const utils = require('@iobroker/adapter-core');
 
 const dali = require('./lib/dali');
+const lib = require('./lib/setdali');
 
 class Dali extends utils.Adapter {
 
@@ -154,36 +155,40 @@ class Dali extends utils.Adapter {
     }
 
 
-    async searchDaliBus(bus, lamps) {
+    async searchDaliBus(bus, device) {
+        this.log.info('aussieht ' + JSON.stringify(device))
+        this.createDatapoints(bus);       
 
-        this.createDatapoints(bus);
-                
-        for(const i in lamps) {
+        for(const i in device) {
            
-            if(lamps[i].name.indexOf('a') === 0) {
-                this.log.debug('lamp ' + i + ' created');
-
-                const path = 'bus' + bus + '.lamps.' + i + '.';
-                
-                this.createStateData(path + i, 'Lamp ' + i, lamps[i].value);
-                this.createStateInfo(path + 'device', 'Device Type', lamps[i].device);
-                this.createStateInfo(path + 'group', 'Groupmember', lamps[i].group);
-                this.createStateInfo(path + 'min', 'Physical min Level', lamps[i].min + '%');
-
-            } else if(lamps[i].name.indexOf('e')===0) {
-                this.log.debug('device ' + i + ' created');
-
-                const path = 'bus' + bus + '.device.' + i + '.';
-                this.createStateData(path + i, 'Device ' + i, lamps[i].value, 0, 100, '', 'switch');
-                this.createStateInfo(path + 'mode', 'Access Mode', lamps[i].mode);
-
-            } else {
+            if (device[i].name.indexOf('g') === 0){
 
                 this.log.debug('group ' + i + ' created');
-
                 const path = 'bus' + bus + '.groups.' + i;
-
                 this.createStateData(path, 'Group ' + i);
+
+            }else {
+
+                this.log.info('device ' + i + ' created');
+
+                const path = 'bus' + bus + device[i].folder +'.' + i + '.';
+
+                for (const id in device[i].info){
+                    this.log.info('id ' + id)
+
+                    if (id === 'levelpos'){
+
+                        this.log.info('blacklist: ' + id)
+
+                    }else if(id === 'state'){
+
+                        this.createStateData(path + i, device[i].info[id][0], device[i].info[id][1]);
+
+                    }else {
+                    
+                        this.createStateData(path + id, device[i].info[id][0], device[i].info[id][1]);
+                    }
+                }
             }
         }
     };
@@ -232,37 +237,11 @@ class Dali extends utils.Adapter {
         this.createStateData('bus' + bus + '.broadcast' + bus, 'Broadcast' + bus);
     }
 
-    createStateData(id, name, value, min = 0, max = 100, unit = '%', role = 'level.dimmer') {
+    createStateData(id, value, state) {
 
         this.setObjectNotExistsAsync(id, {
             type: 'state', 
-            common: {
-                name: name, 
-                role: role, 
-                type: 'number', 
-                read: true, 
-                write: true, 
-                min: min, 
-                max: max, 
-                def: 0, 
-                unit: unit
-            }, 
-            native: {}
-        });
-        this.setState(id, value, true);
-    }
-
-    createStateInfo(id, name, value) {
-
-        this.setObjectNotExistsAsync(id, {
-            type: 'state', 
-            common: {
-                name: name, 
-                type: 'string', 
-                read: true, 
-                write: false,
-                def: value 
-            }, 
+            common: state,
             native: {}
         });
         this.setState(id, value, true);
