@@ -170,7 +170,6 @@ class Dali extends utils.Adapter {
             }else {
 
                 this.log.info('device ' + i + ' created');
-
                 const path = 'bus' + bus + device[i].folder +'.' + i + '.';
 
                 for (const id in device[i].info){
@@ -220,6 +219,8 @@ class Dali extends utils.Adapter {
 
             const sn = (s < 10) ? '0' + s : s;
 
+            this.createStateData('bus' + bus + '.scenes.s' + sn, false, lib.state.scene);
+            /*
             this.setObjectNotExistsAsync('bus' + bus + '.scenes.s' + sn, {
                 type: 'state', 
                 common: {
@@ -231,10 +232,10 @@ class Dali extends utils.Adapter {
                     def: false
                 }, 
                 native: {}
-            });
+            });*/
         }
 
-        this.createStateData('bus' + bus + '.broadcast' + bus, 'Broadcast' + bus);
+        this.createStateData('bus' + bus + '.broadcast' + bus, 'Broadcast' + bus, lib.state.level);
     }
 
     createStateData(id, value, state) {
