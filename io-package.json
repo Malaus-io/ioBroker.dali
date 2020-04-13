@@ -1,8 +1,20 @@
 {
     "common": {
         "name": "dali",
-        "version": "0.0.3",
+        "version": "0.0.4",
         "news": {
+            "0.0.4":{
+                  "en": "now eDali Devices available",
+                  "de": "Jetzt sind eDali-Geräte verfügbar",
+                  "ru": "Теперь доступны устройства eDali",
+                  "pt": "agora dispositivos eDali disponíveis",
+                  "nl": "nu eDali-apparaten beschikbaar",
+                  "fr": "maintenant des appareils eDali disponibles",
+                  "it": "ora sono disponibili i dispositivi eDali",
+                  "es": "ahora dispositivos eDali disponibles",
+                  "pl": "teraz dostępne są urządzenia eDali",
+                  "zh-cn": "现已提供eDali设备"      
+              },
             "0.0.3":{
                 "en": "fix send Message",
                 "de": "Fix Sende Nachricht",

@@ -1,6 +1,6 @@
 {
   "name": "iobroker.dali",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "The DALI 4Net can be used for commissioning and control of DALI lighting systems.",
   "author": {
     "name": "Malaus",

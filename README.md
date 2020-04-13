@@ -25,6 +25,9 @@ Coming soon will get more information in ioBroker from your Dali devices.
 
 ## Changelog
 
+### 0.0.4
+* (Malaus) now eDali Devices available
+
 ### 0.0.3
 * (Malaus) fix send Message
 
