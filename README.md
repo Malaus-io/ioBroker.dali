@@ -23,6 +23,7 @@ On the current version you can import your Dali network into the ioBroker. See a
 Coming soon will get more information in ioBroker from your Dali devices.
 
 
+
 ## Changelog
 
 ### 0.0.4
