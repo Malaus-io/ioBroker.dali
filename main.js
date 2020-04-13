@@ -158,58 +158,62 @@ class Dali extends utils.Adapter {
     async searchDaliBus(bus, devices) {
 
         this.createDatapoints(bus);       
-
-        for(const i in devices) {
+        try{
+            for(const i in devices) {
+                
+                const device = devices[i];
+                
+                const name = device.getName();
+                this.log.info('start create ' + name);
             
-            const device = devices[i];
-            
-            const name = devices[device].getName()
-            this.log.info('start create ' + name)
-           
-            const path = devices[device].getPath();
-            this.log.info('path ' + path)
+                const path = device.getPath();
+                this.log.debug('path ' + path);
 
-            const level = await devices[device].getLevel()
-                if (level != null){
+                const level = await device.getLevel();
+                    if (level != null){
 
-                    this.createStateData(path + name, lib.state.level, level);
+                        this.createStateData(path + name, lib.state.level, level);
+
+                    }
+
+                const min = await device.getMinLevel()
+                    if (min){
+
+                        this.createStateData(path + 'min', lib.state.min, min);
+
+                    }
+
+                const group = await device.getGroup()
+                    if (group){
+
+                        this.createStateData(path + 'group', lib.state.group, group);
+
+                    }
+
+                const state = await device.getState()
+                    if (state != null){
+
+                        this.createStateData(path + name, lib.state.switchState, state);
+
+                    }
+
+                const source = await device.getSource()
+                    if (source){
+
+                        this.createStateData(path + 'source', lib.state.eventSource, source);
+
+                    }
+
+                const type = await device.getType()
+                if (type){
+
+                    this.createStateData(path + 'type', lib.state.type, type);
 
                 }
-
-            const min = await devices[device].getMinLevel()
-                if (min){
-
-                    this.createStateData(path + 'min', lib.state.min, min);
-
-                }
-
-            const group = await devices[device].getGroup()
-                if (group){
-
-                    this.createStateData(path + 'group', lib.state.group, group);
-
-                }
-
-            const state = await devices[device].getState()
-                if (state != null){
-
-                    this.createStateData(path + name, lib.state.switchState, state);
-
-                }
-
-            const source = await devices[device].getSource()
-                if (source){
-
-                    this.createStateData(path + 'source', lib.state.eventSource, source);
-
-                }
-
-            const type = await devices[device].getType()
-            if (type){
-
-                this.createStateData(path + 'type', lib.state.type, type);
-
             }
+        }
+        catch(error) {
+            this.log.error(error);
         }
     };
 
