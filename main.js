@@ -3,7 +3,7 @@
 const utils = require('@iobroker/adapter-core');
 
 const dali = require('./lib/dali');
-const lib = require('./lib/setdali');
+const lib = require('./lib/devicelist');
 
 class Dali extends utils.Adapter {
 
@@ -155,39 +155,60 @@ class Dali extends utils.Adapter {
     }
 
 
-    async searchDaliBus(bus, device) {
-        this.log.info('aussieht ' + JSON.stringify(device))
+    async searchDaliBus(bus, devices) {
+
         this.createDatapoints(bus);       
 
-        for(const i in device) {
+        for(const i in devices) {
+            
+            const device = devices[i];
+            
+            const name = devices[device].getName()
+            this.log.info('start create ' + name)
            
-            if (device[i].name.indexOf('g') === 0){
+            const path = devices[device].getPath();
+            this.log.info('path ' + path)
 
-                this.log.debug('group ' + i + ' created');
-                const path = 'bus' + bus + '.groups.' + i;
-                this.createStateData(path, 'Group ' + i);
+            const level = await devices[device].getLevel()
+                if (level != null){
 
-            }else {
+                    this.createStateData(path + name, lib.state.level, level);
 
-                this.log.info('device ' + i + ' created');
-                const path = 'bus' + bus + device[i].folder +'.' + i + '.';
-
-                for (const id in device[i].info){
-                    this.log.info('id ' + id)
-
-                    if (id === 'levelpos'){
-
-                        this.log.info('blacklist: ' + id)
-
-                    }else if(id === 'state'){
-
-                        this.createStateData(path + i, device[i].info[id][0], device[i].info[id][1]);
-
-                    }else {
-                    
-                        this.createStateData(path + id, device[i].info[id][0], device[i].info[id][1]);
-                    }
                 }
+
+            const min = await devices[device].getMinLevel()
+                if (min){
+
+                    this.createStateData(path + 'min', lib.state.min, min);
+
+                }
+
+            const group = await devices[device].getGroup()
+                if (group){
+
+                    this.createStateData(path + 'group', lib.state.group, group);
+
+                }
+
+            const state = await devices[device].getState()
+                if (state != null){
+
+                    this.createStateData(path + name, lib.state.switchState, state);
+
+                }
+
+            const source = await devices[device].getSource()
+                if (source){
+
+                    this.createStateData(path + 'source', lib.state.eventSource, source);
+
+                }
+
+            const type = await devices[device].getType()
+            if (type){
+
+                this.createStateData(path + 'type', lib.state.type, type);
+
             }
         }
     };
@@ -203,65 +224,33 @@ class Dali extends utils.Adapter {
 
     async createDatapoints(bus) {
 
-        this.setObjectNotExistsAsync('bus' + bus, {
-            type: 'device', 
-            common: {
-                name: 'bus' + bus
-            }, 
-            native: {}
-        });
-
-        this.createChan('bus' + bus + '.lamps' , 'lamps');
-        this.createChan('bus' + bus + '.groups', 'groups');
-        this.createChan('bus' + bus + '.scenes', 'scenes');
+        this.createStateData('bus' + bus, lib.state.bus)
+        this.createStateData('bus' + bus + '.lamps' , lib.state.lamps);
+        this.createStateData('bus' + bus + '.groups', lib.state.groups);
+        this.createStateData('bus' + bus + '.scenes', lib.state.scenes);
     
         for (let s = 0; s < 16; s++) {
 
             const sn = (s < 10) ? '0' + s : s;
 
-            this.createStateData('bus' + bus + '.scenes.s' + sn, false, lib.state.scene);
-            /*
-            this.setObjectNotExistsAsync('bus' + bus + '.scenes.s' + sn, {
-                type: 'state', 
-                common: {
-                    name: 'Scene ' + sn, 
-                    role: 'button', 
-                    type: 'boolean', 
-                    read: false, 
-                    write: true, 
-                    def: false
-                }, 
-                native: {}
-            });*/
+            this.createStateData('bus' + bus + '.scenes.s' + sn, lib.state.scene);
         }
 
-        this.createStateData('bus' + bus + '.broadcast' + bus, 'Broadcast' + bus, lib.state.level);
+        this.createStateData('bus' + bus + '.broadcast' + bus, lib.state.level, 0);
     }
 
-    createStateData(id, value, state) {
+    createStateData(id, state, value) {
 
-        this.setObjectNotExistsAsync(id, {
-            type: 'state', 
-            common: state,
+        this.setObjectNotExistsAsync(id, state,{
             native: {}
         });
         this.setState(id, value, true);
     }
     
-    async createChan(id, name) {
-        
-        this.setObjectNotExistsAsync(id, {
-            type: 'channel', 
-            common: {
-                name: name
-            }, 
-            native: {}
-        });
-    }
-
 }
 
 
+// @ts-ignore
 if(module.parent) {
     // Export the constructor in compact mode
     /**
