@@ -126,10 +126,11 @@ class Dali extends utils.Adapter {
             
             const busno = this.getbusnumber(id);
             const name = id.substring(id.lastIndexOf('.') + 1);
-      
-            if(id.startsWith(this.namespace + '.bus' + busno +'.lamps.')) {
-             
-                this.device.sendLampState(busno, state.val, name);
+            const folder = id.substr(18,3)
+            
+            if(id.startsWith(this.namespace + '.bus' + busno + '.lamps.')) {
+
+                this.device.sendLampState(busno, state.val, name, folder);
 
             } else if(id.startsWith(this.namespace + '.bus' + busno + '.groups.')) {
 
@@ -176,40 +177,97 @@ class Dali extends utils.Adapter {
 
                     }
 
-                const min = await device.getMinLevel()
+                const min = await device.getMinLevel();
                     if (min){
 
                         this.createStateData(path + 'min', lib.state.min, min);
 
                     }
 
-                const group = await device.getGroup()
+                const group = await device.getGroup();
                     if (group){
 
                         this.createStateData(path + 'group', lib.state.group, group);
 
                     }
 
-                const state = await device.getState()
+                const state = await device.getState();
                     if (state != null){
 
                         this.createStateData(path + name, lib.state.switchState, state);
 
                     }
 
-                const source = await device.getSource()
+                const source = await device.getSource();
                     if (source){
 
                         this.createStateData(path + 'source', lib.state.eventSource, source);
 
                     }
 
-                const type = await device.getType()
-                if (type){
+                const type = await device.getType();
+                    if (type){
 
-                    this.createStateData(path + 'type', lib.state.type, type);
+                        this.createStateData(path + 'type', lib.state.type, type);
+
+                    }
+
+                const up = await device.setUp();
+                    if (up){
+
+                        this.createStateData(path + 'up', lib.state.up);
+
+                    }
+
+                const down = await device.setDown();
+                    if (down){
+
+                        this.createStateData(path + 'down', lib.state.down);
+
+                    }
+
+                const stepUp = await device.setStepUp();
+                    if (stepUp){
+
+                        this.createStateData(path + 'stepUp', lib.state.stepUp);
+
+                    }
+
+                const stepDown = await device.setstepDown();
+                    if (stepDown){
+
+                        this.createStateData(path + 'stepDown', lib.state.stepDown);
+
+                    }
+
+                const off = await device.setOff();
+                    if (off){
+
+                        this.createStateData(path + 'off', lib.state.stepDown);
+
+                    }
+
+                const jalousielevel = await device.getJalState();
+                if (jalousielevel != null){
+
+                    this.createStateData(path + name, lib.state.jalousieState, jalousielevel);
 
                 }
+
+                const upstairs = await device.setUpstairs();
+                    if (upstairs){
+
+                        this.createStateData(path + 'upstairs', lib.state.upstairs);
+
+                    }
+
+                const downstairs = await device.setDownstairs();
+                if (downstairs){
+
+                    this.createStateData(path + 'downstairs', lib.state.downstairs);
+
+                }
+                
             }
         }
         catch(error) {
