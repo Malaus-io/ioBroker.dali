@@ -165,11 +165,30 @@ class Dali extends utils.Adapter {
                 const device = devices[i];
                 
                 const name = device.getName();
-                this.log.info('start create ' + name);
+                this.log.debug('start create ' + name);
             
                 const path = device.getPath();
                 this.log.debug('path ' + path);
 
+                const func = await device.callUp();
+
+                for(const id in func){
+                    const d = func[id]
+
+                    if(d != null){
+                        
+                        if(id === 'level' || id === 'switchState' || id === 'jalousieState'){
+
+                            this.createStateData(path + name, lib.state[id], d);
+
+                        }else {
+
+                            this.createStateData(path + id, lib.state[id], d);
+
+                        }
+                    }
+                }
+                /*
                 const level = await device.getLevel();
                     if (level != null){
 
@@ -233,7 +252,7 @@ class Dali extends utils.Adapter {
 
                     }
 
-                const stepDown = await device.setstepDown();
+                const stepDown = await device.setStepDown();
                     if (stepDown){
 
                         this.createStateData(path + 'stepDown', lib.state.stepDown);
@@ -267,6 +286,34 @@ class Dali extends utils.Adapter {
                     this.createStateData(path + 'downstairs', lib.state.downstairs);
 
                 }
+
+                const goToScene0 = await device.goToScene0();
+                if (goToScene0){
+
+                    this.createStateData(path + 'goToScene0', lib.state.goToSecene0);
+
+                }
+
+                const goToScene1 = await device.goToScene1();
+                if (goToScene1){
+
+                    this.createStateData(path + 'goToScene1', lib.state.goToSecene1);
+
+                }
+
+                const goToScene2 = await device.goToScene2();
+                if (goToScene2){
+
+                    this.createStateData(path + 'goToScene2', lib.state.goToSecene2);
+
+                }
+
+                const goToScene3 = await device.goToScene3();
+                if (goToScene3){
+
+                    this.createStateData(path + 'goToScene3', lib.state.goToSecene3);
+
+                }*/
                 
             }
         }
