@@ -20,8 +20,14 @@ With ioBroker Dali Adapter the DALI 4Net can be accessed for control and visuali
 
 On the current version you can import your Dali network into the ioBroker. See and control the level of your lamps.
 
-Coming soon will get more information in ioBroker from your Dali devices.
+Available devices: - Dali LED Modules
+                   - Dali Switch
+                   - Dali MC/MC+
+                   - Dali Sequencer
+                   - Dali 3ch LED Dimmer
+                   - Dali Jalousie
 
+Coming soon will get more Dali devices.
 
 
 ## Changelog
