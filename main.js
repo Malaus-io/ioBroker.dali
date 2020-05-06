@@ -188,7 +188,7 @@ class Dali extends utils.Adapter {
 
                     if(d != null){
                         
-                        if(id === 'level' || id === 'switchState' || id === 'jalousieState'){
+                        if(id === 'level' || id === 'switchState'){
 
                             this.createStateData(path + name, lib.state[id], d);
 
